@@ -30,7 +30,7 @@ struct timer_dev timer[4] = {};
 extern void die(int);
 
 void
-timer_init()
+timer_init(void)
 {
 	printf("-- TIMER_INIT --\n");
 	for (int i = 0; i < NUM_TIMERS; i++) {

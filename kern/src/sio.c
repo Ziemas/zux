@@ -11,7 +11,7 @@
 #define SIO_TXFIFO 0x1000f180
 
 void
-sio_init()
+sio_init(void)
 {
 }
 

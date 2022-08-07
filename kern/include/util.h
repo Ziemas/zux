@@ -184,13 +184,6 @@ poll32(u32 addr, u32 mask, u32 target)
 	}
 }
 
-#define _mfc0(reg)                                                            \
-	({                                                                    \
-		u32 val;                                                      \
-		__asm__ volatile("mfc0 %0, " #reg "\n sync.l\n" : "=r"(val)); \
-		val;                                                          \
-	})
-
 static inline void
 nopdelay(void)
 {

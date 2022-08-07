@@ -17,21 +17,21 @@ die(int rate)
 }
 
 static void
-system_init()
+system_init(void)
 {
 	timer_init();
 	intc_init();
 }
 
 void
-kmain()
+kmain(void)
 {
 	u32 sp, gp;
 	__asm__("move %0, $sp\n" : "=r"(sp) :);
 	__asm__("move %0, $gp\n" : "=r"(gp) :);
 	printf("hello from kmain at %p\n", kmain);
-	printf("   sp: 0x%08x\n", sp);
-	printf("   gp: 0x%08x\n", gp);
+	printf("   sp: 0x%08lx\n", sp);
+	printf("   gp: 0x%08lx\n", gp);
 
 	system_init();
 

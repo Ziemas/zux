@@ -2,7 +2,14 @@ add_executable(kernel)
 
 target_include_directories(kernel PRIVATE "include/")
 
-target_compile_options(kernel PRIVATE -O2 -ffreestanding -nostdlib -Wall -Werror-implicit-function-declaration)
+target_compile_options(kernel PRIVATE
+	-O2
+	-Wall
+	-Werror-implicit-function-declaration
+	-Werror=strict-prototypes
+	-ffreestanding
+	-nostdlib
+	-isystem sysinc)
 
 target_sources(kernel PRIVATE
 	src/crt0.s
