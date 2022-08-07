@@ -22,7 +22,7 @@ DIntr()
 {
 	int eie, res;
 
-	asm volatile("mfc0\t%0, $12" : "=r"(eie));
+	asm volatile("mfc0 %0, $12" : "=r"(eie));
 	eie &= 0x10000;
 	res = eie != 0;
 
@@ -31,9 +31,10 @@ DIntr()
 
 	asm(".p2align 3");
 	do {
-		asm volatile("di");
-		asm volatile("sync.p");
-		asm volatile("mfc0\t%0, $12" : "=r"(eie));
+		asm volatile("di\n"
+			     "sync.p\n"
+			     "mfc0\t%0, $12\n"
+			     : "=r"(eie));
 		eie &= 0x10000;
 	} while (eie);
 
@@ -45,7 +46,7 @@ EIntr()
 {
 	int eie;
 
-	asm volatile("mfc0\t%0, $12" : "=r"(eie));
+	asm volatile("mfc0 %0, $12" : "=r"(eie));
 	eie &= 0x10000;
 	asm volatile("ei");
 
@@ -57,14 +58,14 @@ ee_kmode_enter()
 {
 	u32 status, mask;
 
-	__asm__ volatile(".set\tpush\n\t"
-			 ".set\tnoreorder\n\t"
-			 "mfc0\t%0, $12\n\t"
-			 "li\t%1, 0xffffffe7\n\t"
-			 "and\t%0, %1\n\t"
-			 "mtc0\t%0, $12\n\t"
-			 "sync.p\n\t"
-			 ".set\tpop\n\t"
+	__asm__ volatile(".set push\n"
+			 ".set noreorder\n"
+			 "mfc0 %0, $12\n"
+			 "li %1, 0xffffffe7\n"
+			 "and %0, %1\n"
+			 "mtc0 %0, $12\n"
+			 "sync.p\n"
+			 ".set pop\n"
 			 : "=r"(status), "=r"(mask));
 
 	return status;
@@ -75,13 +76,13 @@ ee_kmode_exit()
 {
 	int status;
 
-	__asm__ volatile(".set\tpush\n\t"
-			 ".set\tnoreorder\n\t"
-			 "mfc0\t%0, $12\n\t"
-			 "ori\t%0, 0x10\n\t"
-			 "mtc0\t%0, $12\n\t"
-			 "sync.p\n\t"
-			 ".set\tpop\n\t"
+	__asm__ volatile(".set push\n"
+			 ".set noreorder\n"
+			 "mfc0 %0, $12\n"
+			 "ori %0, 0x10\n"
+			 "mtc0 %0, $12\n"
+			 "sync.p\n"
+			 ".set pop\n"
 			 : "=r"(status));
 
 	return status;
@@ -101,6 +102,63 @@ write32(u32 addr, u32 data)
 	__asm__ volatile("sw %0, 0(%1)" : : "r"(data), "r"(addr) : "memory");
 }
 
+static inline u32
+set32(u32 addr, u32 set)
+{
+	u32 data;
+	__asm__ volatile("lw %0, 0(%1)\n"
+			 "or %0, %2\n"
+			 "sw %0, 0(%1)\n"
+			 : "=&r"(data)
+			 : "r"(addr), "r"(set)
+			 : "memory");
+	return data;
+}
+
+static inline u32
+clear32(u32 addr, u32 clear)
+{
+	u32 data;
+	__asm__ volatile("lw %0, 0(%1)\n"
+			 "not %2\n"
+			 "and %0, %2\n"
+			 "sw %0, 0(%1)\n"
+			 : "=&r"(data)
+			 : "r"(addr), "r"(clear)
+			 : "memory");
+	return data;
+}
+
+static inline u32
+mask32(u32 addr, u32 clear, u32 set)
+{
+	u32 data;
+	__asm__ volatile(".set noat\n"
+			 "lw %0, 0(%1)\n"
+			 "not %3\n"
+			 "and %0, %3\n"
+			 "or $0, %2\n"
+			 "sw $0, 0($1)\n"
+			 : "=&r"(data)
+			 : "r"(addr), "r"(set), "r"(clear)
+			 : "memory");
+	return data;
+}
+
+static inline u16
+read16(u32 addr)
+{
+	u8 data;
+	__asm__ volatile("lh %0, 0(%1)" : "=r"(data) : "r"(addr) : "memory");
+	return data;
+}
+
+static inline void
+write16(u32 addr, u16 data)
+{
+	__asm__ volatile("sh %0, 0(%1)" : : "r"(data), "r"(addr) : "memory");
+}
+
 static inline u8
 read8(u32 addr)
 {
@@ -114,6 +172,24 @@ write8(u32 addr, u8 data)
 {
 	__asm__ volatile("sb %0, 0(%1)" : : "r"(data), "r"(addr) : "memory");
 }
+
+static inline int
+poll32(u32 addr, u32 mask, u32 target)
+{
+	while (1) {
+		u32 value = read32(addr) & mask;
+		if (value == target) {
+			return 0;
+		}
+	}
+}
+
+#define _mfc0(reg)                                                            \
+	({                                                                    \
+		u32 val;                                                      \
+		__asm__ volatile("mfc0 %0, " #reg "\n sync.l\n" : "=r"(val)); \
+		val;                                                          \
+	})
 
 static inline void
 nopdelay(void)

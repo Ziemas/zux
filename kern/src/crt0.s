@@ -19,12 +19,14 @@ __init_reg:
 __clearbss:
 	la $v1, __bss_end
 	la $v0, __bss_start
-	beql $v0, $v1, exit
+	beq $v0, $v1, exit
+	nop
 loop:
 	sq $zero, 0($v0)
 	addiu $v0, 0x10
 	slt $a0, $v1, $v0
-	bnel $a0, $zero, loop
+	bne $a0, $zero, loop
+	nop
 exit:
 	jr $ra
 	nop

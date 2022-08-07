@@ -38,12 +38,9 @@ main(int argc, char *argv[])
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *)kelf_data;
 
 	if (!IS_ELF(*ehdr)) {
-		printf("boi you fucked up\n");
 		while (1)
 			;
 	}
-
-	printf("doing da thing\n");
 
 	DI();
 	ee_kmode_enter();

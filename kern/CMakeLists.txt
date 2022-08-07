@@ -12,6 +12,9 @@ target_sources(kernel PRIVATE
 	src/sio.c
 	src/printf.c
 	src/dev9.c
+	src/timer.c
+	src/intc.c
+	src/util.c
 )
 
 target_link_options(kernel PRIVATE

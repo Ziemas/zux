@@ -3,6 +3,7 @@
 	.globl __dead_loop
 	.extern die
 __dead_loop:
+	li $a0, 400000
 	jal die
 	nop
 	nop
