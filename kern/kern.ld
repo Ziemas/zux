@@ -1,6 +1,6 @@
 MEMORY
 {
-	vec (wx) : org = 0x80000000, len = 4k
+	vec (rx) : org = 0x80000000, len = 4k
 	ram (wx) : org = 0x80001000, len = 128k
 }
 
@@ -17,17 +17,21 @@ SECTIONS
 		*(.text)
 	} > ram
 
-	.data : {
+	.data ALIGN(128) : {
 		*(.data)
 		*(.rodata)
 		*(.rodata.*)
 	} > ram
 
-	.bss : {
+	_gp = ALIGN(128);
+
+	.bss ALIGN(128) : {
 		PROVIDE(__bss_start = .);
 		*(.bss)
 		PROVIDE(__bss_end = .);
 	} > ram
+
+	PROVIDE(__kern_stack = ALIGN(128));
 
 	/DISCARD/ : {
 		*(.debug*)

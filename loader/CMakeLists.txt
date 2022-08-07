@@ -20,3 +20,5 @@ target_compile_definitions(loader PRIVATE _EE)
 target_link_libraries(loader PRIVATE
 )
 add_dependencies(loader kernel)
+
+set_target_properties(loader PROPERTIES SUFFIX ".elf")

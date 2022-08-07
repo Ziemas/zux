@@ -1,7 +1,7 @@
 set(CMAKE_SYSTEM_NAME ps2)
 set(CMAKE_SYSTEM_PROCESSOR mips)
 
-set(CMAKE_SYSROOT $ENV{PS2DEV}/ee)
+set(CMAKE_SYSROOT $ENV{PS2DEV}/ee/mips64r5900el-ps2-elf/)
 
 set(tools $ENV{PS2DEV}/ee/bin)
 set(CMAKE_C_COMPILER ${tools}/mips64r5900el-ps2-elf-gcc)
