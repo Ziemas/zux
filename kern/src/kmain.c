@@ -7,12 +7,12 @@
 void
 die(int rate)
 {
-	int state = 0;
+	int state = 1;
 
 	while (1) {
-		udelay(rate);
 		dev9_set_led(state);
 		state = !state;
+		udelay(rate);
 	}
 }
 
@@ -35,5 +35,6 @@ kmain(void)
 
 	system_init();
 
+	printf("end of kmain\n");
 	die(1000000);
 }

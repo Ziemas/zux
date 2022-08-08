@@ -8,8 +8,8 @@ void
 udelay(int u)
 {
 	u32 delay = ((u64)u) * CLOCK_RATE / 1000000;
-	u32 value = mfc0(COP0_R_COUNT);
+	u32 value = mfc0(COUNT);
 
-	while ((mfc0(COP0_R_COUNT) - value) < delay)
+	while ((mfc0(COUNT) - value) < delay)
 		;
 }
