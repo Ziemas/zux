@@ -1,6 +1,7 @@
 #include "elf32.h"
 
 #include <kernel.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -36,6 +37,7 @@ int
 main(int argc, char *argv[])
 {
 	Elf32_Ehdr *ehdr = (Elf32_Ehdr *)kelf_data;
+	uint32_t ep = ehdr->e_entry;
 
 	if (!IS_ELF(*ehdr)) {
 		while (1)
@@ -59,7 +61,7 @@ main(int argc, char *argv[])
 	writeback_dcache();
 	invalidate_icache();
 
-	__asm__("j %0" ::"r"(0x80001000));
+	__asm__("j %0" ::"r"(ep));
 
 	while (1)
 		SleepThread();

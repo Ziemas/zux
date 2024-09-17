@@ -1,5 +1,5 @@
-add_custom_command(OUTPUT kernel.s
-  COMMAND bin2s $<TARGET_FILE:kernel> kernel.s kelf_data
+add_custom_command(OUTPUT kernel.c
+  COMMAND bin2c $<TARGET_FILE:kernel> kernel.c kelf_data
 )
 
 add_executable(loader)
@@ -11,7 +11,7 @@ target_include_directories(loader PRIVATE
 target_compile_options(loader PRIVATE -G0 -Wall -Werror-implicit-function-declaration)
 target_sources(loader PRIVATE
 	src/loader.c
-	kernel.s
+	kernel.c
 )
 target_link_options(loader PRIVATE
 	-T$ENV{PS2SDK}/ee/startup/linkfile

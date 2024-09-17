@@ -4,6 +4,8 @@ MEMORY
 	ram (wx) : org = 0x80001000, len = 128k
 }
 
+ENTRY(__start)
+
 SECTIONS
 {
 	.text 0x80000000 : { *(.vec.tlb.el0) } > vec
